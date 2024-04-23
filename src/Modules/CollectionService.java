@@ -27,8 +27,10 @@ public class CollectionService {
 
     public void addElement(){
         CityWithoutId source = createElement();
-
-        Integer newId = (int) (Math.random()*(Math.pow(2,32) + 1));
+        UUID uuid = UUID.randomUUID();
+        long mostSignificantBits = uuid.getMostSignificantBits();
+        long leastSignificantBits = uuid.getLeastSignificantBits();
+        long newId = Math.abs(mostSignificantBits ^ leastSignificantBits);
         City newElement = new City(
                 newId,
                 source.name,
@@ -118,9 +120,12 @@ public class CollectionService {
 
             CityWithoutId source = createElement();
 
-            Integer newId = (int) (Math.random() * (Math.pow(2, 32) + 1));
+            UUID uuid = UUID.randomUUID();
+            long mostSignificantBits = uuid.getMostSignificantBits();
+            long leastSignificantBits = uuid.getLeastSignificantBits();
+            long nnId = Math.abs(mostSignificantBits ^ leastSignificantBits);
             City newElement = new City(
-                    newId,
+                    nnId,
                     source.name,
                     source.coordinates,
                     source.creationDate,
@@ -172,7 +177,7 @@ public class CollectionService {
             }
         }
         catch (IllegalArgumentException e){
-            System.out.println("Invalid input for standard of living. Please enter a valid standard of living option.");
+            System.out.println("Invalid input for standard of living. Please enter a valid standard of living option (HIGH, LOW, NIGHTMARE).");
         }
     }
 
@@ -191,7 +196,10 @@ public class CollectionService {
     public void addIfMin() {
         CityWithoutId source = createElement();
 
-        Integer newId = (int) (Math.random()*(Math.pow(2,32) + 1));
+        UUID uuid = UUID.randomUUID();
+        long mostSignificantBits = uuid.getMostSignificantBits();
+        long leastSignificantBits = uuid.getLeastSignificantBits();
+        long newId = Math.abs(mostSignificantBits ^ leastSignificantBits);
         City newCity = new City(
                 newId,
                 source.name,
@@ -294,11 +302,13 @@ public class CollectionService {
                         break;
                     default:
                         throw new EmptyFieldException("No such standard of living. " +
-                                "Re-enter it correctly: ");
+                                "Re-enter it correctly (HIGH, LOW, NIGHTMARE): ");
                 }
                 return standard;
+            } catch(NullPointerException e){
+                System.out.println("Null standard of living found.");
             } catch (EmptyFieldException e){
-                System.out.println(e.getMessage());
+                System.out.println("Wrong format of standard of living.");
             }
         }
     }
@@ -336,6 +346,17 @@ public class CollectionService {
             } catch (NegativeFieldException e){
                 System.out.println(e.getMessage());
             }
+        }
+    }
+    public String askGovernorName(Scanner InputScanner){
+        while(true) {
+                var name = InputScanner.nextLine();
+                if (!name.isBlank()){
+                    return name.trim();
+                }
+                else {
+                    return "null";
+                }
         }
     }
 
@@ -378,8 +399,11 @@ public class CollectionService {
 
         Date creationDate = new Date();
 
-        System.out.println("Enter the governor's name: ");
-        Human governor = new Human(askString(InputScanner));
+        System.out.println("Enter the governor's name (if you want it to be null -- enter \"null\" in any case: ");
+        Human governor = new Human(askGovernorName(InputScanner));
+        if (governor.getName().equalsIgnoreCase("null")){
+            governor = null;
+        }
 
         return new CityWithoutId(name, coordinates, creationDate, area, population, metersAboveSeaLevel, telephoneCode, agglomeration, standard, governor);
     }

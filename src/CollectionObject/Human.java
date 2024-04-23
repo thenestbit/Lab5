@@ -8,6 +8,10 @@ public class Human {
     }
 
     public String getName() {
-        return name;
+        if (this.name != null) {
+            return name;
+        }else{
+            return "null";
+        }
     }
 }

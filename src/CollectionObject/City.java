@@ -134,6 +134,21 @@ public class City {
 
     @Override
     public String toString() {
+        if (this.governor == null) {
+            return "City{" +
+                    "id=" + id +
+                    ", name='" + name + '\'' +
+                    ", coordinates=" + coordinates +
+                    ", creationDate=" + creationDate +
+                    ", area=" + area +
+                    ", population=" + population +
+                    ", metersAboveSeaLevel=" + metersAboveSeaLevel +
+                    ", telephoneCode=" + telephoneCode +
+                    ", agglomeration=" + agglomeration +
+                    ", standardOfLiving=" + standardOfLiving +
+                    ", governor=" + null +
+                    '}';
+        }
         return "City{" +
                 "id=" + id +
                 ", name='" + name + '\'' +

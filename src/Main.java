@@ -26,7 +26,7 @@ public class Main {
             System.out.println("No system environment variable named \"PATH_TO_XML\" found. Bye!");
             System.exit(1);
         } catch (NoSuchElementException e){
-            System.out.println("Environment variable is blank. Bye!");
+            System.out.println("Error during loading file. Bye!");
             System.exit(1);
         }
 
@@ -40,7 +40,7 @@ public class Main {
 
         while (true) {
             try {
-                while (scanner.hasNext()) {
+                while (scanner.hasNextLine()) {
                     var command = "";
                     var arguments = "";
                     String[] input = (scanner.nextLine() + " ").trim().split(" ", 2);

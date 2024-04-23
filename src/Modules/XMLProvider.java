@@ -43,7 +43,11 @@ public class XMLProvider implements DataProvider {
                 writer.write("\t\t<telephoneCode>" + city.getTelephoneCode() + "</telephoneCode>\n");
                 writer.write("\t\t<agglomeration>" + city.getAgglomeration() + "</agglomeration>\n");
                 writer.write("\t\t<standardOfLiving>" + city.getStandardOfLiving() + "</standardOfLiving>\n");
-                writer.write("\t\t<governor>" + city.getGovernor().getName() + "</governor>\n");
+                if (city.getGovernor() == null) {
+                    writer.write("\t\t<governor>" + "null" + "</governor>\n");
+                } else{
+                    writer.write("\t\t<governor>" + city.getGovernor().getName() + "</governor>\n");
+                }
                 writer.write("\t</city>\n");
             }
 
@@ -51,7 +55,7 @@ public class XMLProvider implements DataProvider {
             System.out.println("Cities were saved successfuly");
 
         } catch (FileNotFoundException e){
-            System.out.println("File not found.");
+            System.out.println("Error occured while saving collection: " + e.getMessage());
             System.exit(1);
         }
     }
@@ -123,8 +127,10 @@ public class XMLProvider implements DataProvider {
                     arrayDeque.add(city); // Add the parsed City object to the collection
                 }
             }
+        } catch (SecurityException e){
+            System.out.println("You have no access to " + FILE_PATH + ". Ask your admin for rights.");
         } catch (NoSuchFileException e){
-            System.out.println("No such file or directory. Bye!");
+            System.out.println("Error occured while loading collection" + e.getMessage() +". Bye!");
             System.exit(1);
         } catch (IOException e){
             System.out.println("No such file or directory. Bye!");
@@ -136,7 +142,11 @@ public class XMLProvider implements DataProvider {
         String governorName = line.replaceAll("<governor>(.*)</governor>", "$1").trim();
 
         try {
-            return new Human(governorName);
+            if (governorName != "null") {
+                return new Human(governorName);
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             System.out.println("Wrong governor found while parsing data. Default value set.");;
             return new Human("Unknown"); // Return a default Human object or handle the error as needed
@@ -145,13 +155,13 @@ public class XMLProvider implements DataProvider {
 
 
     private StandardOfLiving parseStandardOfLiving(String line) {
-        String standardOfLivingString = line.replaceAll("<standardOfLiving>(.*)</standardOfLiving>", "$1");
+        String standardOfLivingString = line.replaceAll("<standardOfLiving>(.*)</standardOfLiving>", "$1").trim();
 
         try {
-            return StandardOfLiving.valueOf(standardOfLivingString);
+            return StandardOfLiving.valueOf(standardOfLivingString.toUpperCase());
         } catch (IllegalArgumentException e) {
-            System.out.println("Default value set.");
-            return null; // Return a default value or handle the error as needed
+            System.out.println("Wrong standard. Default value set.");
+            return StandardOfLiving.LOW; // Return a default value or handle the error as needed
         }
     }
 
@@ -164,7 +174,7 @@ public class XMLProvider implements DataProvider {
         try {
             return dateFormat.parse(dateString);
         } catch (ParseException e) {
-            System.out.println("Wrong date found while parsing data. Default value set.");;
+            System.out.println("Wrong date found while parsing data. Default value set.");
             return null;
         }
     }
